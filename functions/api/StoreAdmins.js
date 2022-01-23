@@ -1,0 +1,19 @@
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+
+const express = require('express');
+const cors = require('cors');
+const app = express();
+app.use(cors({ origin: true }));
+
+const StoreAdminsFunctions = require('../services/StoreAdmins')
+
+app.post('/CreateStoreAdmins', async (req, res) => StoreAdminsFunctions.Create(req, res))
+
+app.post('/ReadStoreAdmins', async (req, res) => StoreAdminsFunctions.Read(req, res))
+
+app.post('/UpdateStoreAdmins', async (req, res) => StoreAdminsFunctions.Update(req, res))
+
+app.post('/DeleteStoreAdmins', async (req, res) => StoreAdminsFunctions.Delete(req, res))
+
+exports.StoreAdmins = functions.region("asia-south1").https.onRequest(app);

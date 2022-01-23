@@ -1,9 +1,8 @@
 const functions = require("firebase-functions");
-
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
-async function Create(collectionName, data, docName) {
+async function Create(collectionName, data, docName,) {
     return new Promise(async (resolve, reject) => {
         try {
             if (docName !== undefined) {
@@ -104,27 +103,6 @@ async function Read(collectionName, docName, index, Keyword, limit = 10, where, 
     });
 }
 
-async function Check(collectionName, docName, Answer) {
-    let query
-    return new Promise(async (resolve, reject) => {
-
-        try {
-            query = db.collection(collectionName).doc(docName)
-            if (query.Answer == Answer) {
-                resolve(true);
-            }
-            else {
-                resolve(false);
-            }
-        } catch (error) {
-            functions.logger.error(error);
-            functions.logger.log(error);
-
-        }
-    })
-
-
-}
 
 async function WhereGet(collectionName, Field, data, DocId) {
     return new Promise(async (resolve, reject) => {
@@ -158,6 +136,5 @@ module.exports = {
     Update,
     Delete,
     Read,
-    Check,
     WhereGet
 };
