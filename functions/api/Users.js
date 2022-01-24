@@ -16,4 +16,6 @@ app.post('/UpdateUsers', async (req, res) => UsersFunctions.Update(req, res))
 
 app.post('/DeleteUsers', async (req, res) => UsersFunctions.Delete(req, res))
 
+app.post('/RedeemPoints', async (req, res) => UsersFunctions.Redeem(req, res))
+
 exports.Users = functions.region("asia-south1").https.onRequest(app);

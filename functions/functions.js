@@ -136,5 +136,6 @@ module.exports = {
     Update,
     Delete,
     Read,
+
     WhereGet
 };

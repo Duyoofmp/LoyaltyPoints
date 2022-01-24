@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const dataHandling = require("../functions");
+const { createKeywords } = require('../common');
 
 async function Create(req, res) {
     req.body.index = Date.now();
@@ -10,7 +11,7 @@ async function Create(req, res) {
     }
     const data = await dataHandling.Create("Users", req.body);
     await admin.firestore().collection("Users").doc(data).collection("StoreAdmins").add({
-        Point: req.body.Amount * 0.5,
+        Points: req.body.Amount * 0.5,
     })
     return res.json(true);
 }
@@ -30,9 +31,21 @@ async function Read(req, res) {
     return res.json(data)
 }
 
+async function Redeem(req, res) {
+    const query = await admin.firestore().collection("Users").doc(req.body.DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).get();
+    let Points = query.data().Points
+    console.log(Points)
+    Points = Points - req.body.Points;
+    await admin.firestore().collection("Users").doc(req.body.DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).update({
+        Points: Points
+    })
+    return res.json(true)
+}
+
 module.exports = {
     Create,
     Update,
     Delete,
-    Read
+    Read,
+    Redeem
 }
