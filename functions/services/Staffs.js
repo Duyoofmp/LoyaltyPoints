@@ -1,16 +1,34 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const dataHandling = require("../functions");
+const common = require('../common')
 
 async function Create(req, res) {
     req.body.index = Date.now();
-    await dataHandling.Create("Staffs", req.body);
-    return res.json(true);
+    const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
+    if (check) {
+        const PhoneNumber = req.body.PhoneNumber
+        const user = await admin.auth().createUser({
+            phoneNumber: PhoneNumber,
+            displayName: req.body.StaffName
+        })
+        const DocId = user.uid;
+        await dataHandling.Create("Staffs", req.body, DocId);
+        return res.json(true);
+    }
+    else {
+        return res.json(false);
+    }
 }
 
 async function Update(req, res) {
-    await dataHandling.Update("Staffs", req.body, req.body.DocId)
-    res.json(true)
+    const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
+    if (check) {
+        await dataHandling.Update("Staffs", req.body, req.body.DocId)
+        return res.json(true)
+    } else {
+        return res.json("Username Already exists")
+    }
 }
 
 async function Delete(req, res) {

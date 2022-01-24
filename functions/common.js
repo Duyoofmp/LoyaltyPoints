@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const db = admin.firestore();
+const auth = admin.auth();
 
 const createKeywords = (name, resultArr) => {
     if (name === undefined) { name = "" }
@@ -22,6 +23,8 @@ const createKeywords = (name, resultArr) => {
     }
 }
 
+
 module.exports = {
-    createKeywords
+    createKeywords,
+    
 }

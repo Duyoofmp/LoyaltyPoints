@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const ServiceAccount = require('./config/serviceAccount.json')
+const ServiceAccount = require('./config/ServiceAccount.json')
 
 admin.initializeApp({
     credential: admin.credential.cert(ServiceAccount)
@@ -13,3 +13,16 @@ exports.Users = Users.Users
 
 const StoreAdmins = require('./api/StoreAdmins')
 exports.StoreAdmins = StoreAdmins.StoreAdmins
+
+const StaffsTriggers = require('./triggers/Staffs')
+exports.OnStaffsCreate = StaffsTriggers.OnStaffsCreate
+exports.OnStaffsUpdate = StaffsTriggers.OnStaffsUpdate
+
+const StoreAdminsTriggers = require('./triggers/StoreAdmins')
+exports.OnStoreAdminsCreate = StoreAdminsTriggers.OnStoreAdminsCreate
+exports.OnStoreAdminsUpdate = StoreAdminsTriggers.OnStoreAdminsUpdate
+
+
+const UsersTriggers = require('./triggers/Users')
+exports.OnUsersCreate = UsersTriggers.OnUsersCreate
+exports.OnUsersUpdate = UsersTriggers.OnUsersUpdate
