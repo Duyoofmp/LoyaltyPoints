@@ -23,9 +23,9 @@ async function Create(req, res) {
         const data = await dataHandling.Create("Users", req.body, DocId);
         if (req.body.Amount !== undefined) {
             const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
-            await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").add({
+            await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
                 Points: Amount * data.Percentage,
-            })
+            },{merge:true})
         }
         return res.json(true);
     }
@@ -62,7 +62,8 @@ async function Redeem(req, res) {
     await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreId)
     await admin.firestore().collection("Users").doc(req.body.DocId).collection("RedeemHistory").add({
         Date: moment().format('YYYY MMMM Do'),
-        Points: req.body.Points
+        Points: req.body.Points,
+        StoreAdminId:req.body.StoreId
     })
     await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("RedeemHistory").add({
         Date: moment().format('YYYY MMMM Do'),
