@@ -44,22 +44,26 @@ async function Read(req, res) {
 
 async function ReadAddHistory(req, res) {
     if (req.body.Date !== undefined) {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "=", req.body.Date],)
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date], ["desc"])
+        return res.json(data)
     }
     else {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`)
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, undefined, ["desc"])
+        return res.json(data)
     }
-    return res.json(data)
+
 }
 
 async function ReadRedeemHistory(req, res) {
     if (req.body.Date !== undefined) {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "=", req.body.Date],)
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date], ["desc"])
+        return res.json(data)
     }
     else {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`)
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, undefined, "desc")
+        return res.json(data)
     }
-    return res.json(data)
+
 }
 module.exports = {
     Create,

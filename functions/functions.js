@@ -59,7 +59,7 @@ async function Read(collectionName, docName, index, Keyword, limit = 10, where, 
         }
         if (orderBy[0] === true) {
             for (let orderByIndex = 1; orderByIndex < orderBy.length; orderByIndex = orderByIndex + 2) {
-                const element = orderBy[orderByIndex];
+                const element = orderBy
                 query = query.orderBy(element[orderByIndex], element[orderByIndex + 1]);
             }
         }
