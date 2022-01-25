@@ -21,6 +21,7 @@ async function Create(req, res) {
 }
 
 async function Update(req, res) {
+    req.body.index = Date.now()
     const check = await dataHandling.WhereGet("StoreAdmins", "Username", req.body.Username)
     if (check) {
         await dataHandling.Update("StoreAdmins", req.body, req.body.DocId)
@@ -41,9 +42,30 @@ async function Read(req, res) {
     return res.json(data)
 }
 
+async function ReadAddHistory(req, res) {
+    if (req.body.Date !== undefined) {
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "=", req.body.Date],)
+    }
+    else {
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`)
+    }
+    return res.json(data)
+}
+
+async function ReadRedeemHistory(req, res) {
+    if (req.body.Date !== undefined) {
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "=", req.body.Date],)
+    }
+    else {
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`)
+    }
+    return res.json(data)
+}
 module.exports = {
     Create,
     Update,
     Delete,
-    Read
+    Read,
+    ReadAddHistory,
+    ReadRedeemHistory
 }

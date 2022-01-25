@@ -22,6 +22,7 @@ async function Create(req, res) {
 }
 
 async function Update(req, res) {
+    req.body.index = Date.now()
     const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
     if (check) {
         await dataHandling.Update("Staffs", req.body, req.body.DocId)

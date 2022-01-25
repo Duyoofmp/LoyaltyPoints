@@ -16,4 +16,11 @@ app.post('/UpdateStoreAdmins', async (req, res) => StoreAdminsFunctions.Update(r
 
 app.post('/DeleteStoreAdmins', async (req, res) => StoreAdminsFunctions.Delete(req, res))
 
+app.post('/ReadAddHistory', async (req, res) => StoreAdminsFunctions.ReadAddHistory(req, res))
+
+app.post('/ReadRedeemHistory', async(req,res)=> StoreAdminsFunctions.ReadRedeemHistory(req,res))
+
+
+
+
 exports.StoreAdmins = functions.region("asia-south1").https.onRequest(app);

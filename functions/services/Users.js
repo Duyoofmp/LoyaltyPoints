@@ -20,13 +20,15 @@ async function Create(req, res) {
             displayName: req.body.UserName
         })
         const DocId = user.uid;
+        let point = 0;
         const data = await dataHandling.Create("Users", req.body, DocId);
-        if (req.body.Amount !== undefined) {
+        if (Amount !== undefined) {
             const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
-            await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
-                Points: Amount * data.Percentage,
-            },{merge:true})
+            point = Amount * data.Percentage
         }
+        await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
+            Points: point,
+        }, { merge: true })
         return res.json(true);
     }
     else {
@@ -35,6 +37,7 @@ async function Create(req, res) {
 }
 
 async function Update(req, res) {
+    req.body.index = Date.now()
     const check = await dataHandling.WhereGet("Users", "Username", req.body.Username)
     if (check) {
         await dataHandling.Update("Users", req.body, req.body.DocId)
@@ -61,13 +64,15 @@ async function Redeem(req, res) {
     Points = Points - req.body.Points;
     await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreId)
     await admin.firestore().collection("Users").doc(req.body.DocId).collection("RedeemHistory").add({
-        Date: moment().format('YYYY MMMM Do'),
+        Date: moment().format('YYYY-MMMM-DD'),
         Points: req.body.Points,
-        StoreAdminId:req.body.StoreId
+        StoreAdminId: req.body.StoreId,
+        index: Date.now()
     })
     await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("RedeemHistory").add({
-        Date: moment().format('YYYY MMMM Do'),
-        Points: req.body.Points
+        Date: moment().format('YYYY-MMMM-DD'),
+        Points: req.body.Points,
+        index: Date.now()
     })
     return res.json(true)
 }
@@ -81,11 +86,33 @@ async function AddPoints(req, res) {
     return res.json(true)
 }
 
+async function ReadAddHistory(req, res) {
+    if (req.body.Date !== undefined) {
+        const data = await dataHandling.Read(`Users/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "=", req.body.Date],)
+    }
+    else {
+        const data = await dataHandling.Read(`Users/${req.body.StoreAdminId}/AddHistory`)
+    }
+    return res.json(data)
+}
+
+async function ReadRedeemHistory(req, res) {
+    if (req.body.Date !== undefined) {
+        const data = await dataHandling.Read(`Users/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "=", req.body.Date],)
+    }
+    else {
+        const data = await dataHandling.Read(`Users/${req.body.StoreAdminId}/RedeemHistory`)
+    }
+    return res.json(data)
+}
+
 module.exports = {
     Create,
     Update,
     Delete,
     Read,
     Redeem,
-    AddPoints
+    AddPoints,
+    ReadAddHistory,
+    ReadRedeemHistory
 }

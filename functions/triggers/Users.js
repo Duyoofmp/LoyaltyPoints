@@ -31,7 +31,6 @@ exports.OnPointsUpdate = functions.firestore
     .onUpdate(async (change, context) => {
         const userid = context.params.userid;
         const docid = context.params.docid;
-
         const dataold = change.before.data()
         const datanew = change.after.data()
         const data =await db.collection('Users').doc(userid).get()
@@ -41,11 +40,13 @@ exports.OnPointsUpdate = functions.firestore
             await db.collection("Users").doc(userid).collection("AddHistory").add({
                 Date: moment().format('YYYY MMMM Do'),
                 Points: Points,
-                StoreAdminId:docid
+                StoreAdminId:docid,
+                index: Date.now()
             })
             await db.collection("StoreAdmins").doc(docid).collection("AddHistory").add({
                 Date: moment().format('YYYY MMMM Do'),
-                Points: Points
+                Points: Points,
+                index: Date.now()
             })
         }
     })

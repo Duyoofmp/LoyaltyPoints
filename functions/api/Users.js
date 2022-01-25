@@ -20,6 +20,12 @@ app.post('/RedeemPoints', async (req, res) => UsersFunctions.Redeem(req, res))
 
 app.post('/AddPoints', async (req, res) => UsersFunctions.AddPoints(req, res))
 
+app.post('/ReadAddHistory', async (req, res) => StoreAdminsFunctions.ReadAddHistory(req, res))
+
+app.post('/ReadRedeemHistory', async(req,res)=> StoreAdminsFunctions.ReadRedeemHistory(req,res))
+
+
+
 
 
 exports.Users = functions.region("asia-south1").https.onRequest(app);
