@@ -2,6 +2,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const dataHandling = require("../functions");
 const { createKeywords } = require('../common');
+const moment = require('moment');
 
 async function Create(req, res) {
     req.body.index = Date.now();
@@ -20,9 +21,12 @@ async function Create(req, res) {
         })
         const DocId = user.uid;
         const data = await dataHandling.Create("Users", req.body, DocId);
-        await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").add({
-            Points: Amount * 0.5,
-        })
+        if (req.body.Amount !== undefined) {
+            const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
+            await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").add({
+                Points: Amount * data.Percentage,
+            })
+        }
         return res.json(true);
     }
     else {
@@ -52,10 +56,18 @@ async function Read(req, res) {
 }
 
 async function Redeem(req, res) {
-    const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreAdminId);
-    let Points = query.data().Points
+    const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreId);
+    let Points = query.Points
     Points = Points - req.body.Points;
-    await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreAdminId)
+    await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreId)
+    await admin.firestore().collection("Users").doc(req.body.DocId).collection("RedeemHistory").add({
+        Date: moment().format('YYYY MMMM Do'),
+        Points: req.body.Points
+    })
+    await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("RedeemHistory").add({
+        Date: moment().format('YYYY MMMM Do'),
+        Points: req.body.Points
+    })
     return res.json(true)
 }
 

@@ -14,6 +14,9 @@ exports.Users = Users.Users
 const StoreAdmins = require('./api/StoreAdmins')
 exports.StoreAdmins = StoreAdmins.StoreAdmins
 
+const Category = require('./api/Category')
+exports.Category = Category.Category
+
 const StaffsTriggers = require('./triggers/Staffs')
 exports.OnStaffsCreate = StaffsTriggers.OnStaffsCreate
 exports.OnStaffsUpdate = StaffsTriggers.OnStaffsUpdate
