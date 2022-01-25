@@ -30,17 +30,20 @@ exports.OnPointsUpdate = functions.firestore
     .document("Users/{userid}/StoreAdmins/{docid}")
     .onUpdate(async (change, context) => {
         const userid = context.params.userid;
+        const docid = context.params.docid;
+
         const dataold = change.before.data()
         const datanew = change.after.data()
         const data =await db.collection('Users').doc(userid).get()
-        const StoreAdminId = data.data().StoreAdminId
+       // const StoreAdminId = data.data().StoreAdminId
         const Points = datanew.Points - dataold.Points
         if (Points > 0) {
             await db.collection("Users").doc(userid).collection("AddHistory").add({
                 Date: moment().format('YYYY MMMM Do'),
-                Points: Points
+                Points: Points,
+                StoreAdminId:docid
             })
-            await db.collection("StoreAdmins").doc(StoreAdminId).collection("AddHistory").add({
+            await db.collection("StoreAdmins").doc(docid).collection("AddHistory").add({
                 Date: moment().format('YYYY MMMM Do'),
                 Points: Points
             })
