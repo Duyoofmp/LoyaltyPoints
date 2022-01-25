@@ -6,7 +6,7 @@ async function Create(req, res) {
     req.body.index = Date.now();
     const check = await dataHandling.WhereGet("StoreAdmins", "Username", req.body.Username)
     if (check) {
-        const PhoneNumber = req.body.PhoneNumber
+        const PhoneNumber = req.body.PhoneNumber;
         const user = await admin.auth().createUser({
             phoneNumber: PhoneNumber,
             displayName: req.body.StoreAdminName
@@ -36,7 +36,8 @@ async function Delete(req, res) {
 }
 
 async function Read(req, res) {
-    const data = await dataHandling.Read("StoreAdmins", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit)
+    const data = await dataHandling.Read("StoreAdmins", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit);
+    delete data.Keywords
     return res.json(data)
 }
 

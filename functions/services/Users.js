@@ -20,7 +20,7 @@ async function Create(req, res) {
         })
         const DocId = user.uid;
         const data = await dataHandling.Create("Users", req.body, DocId);
-        await admin.firestore().collection("Users").doc(data).collection("StoreAdmins").add({
+        await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").add({
             Points: Amount * 0.5,
         })
         return res.json(true);
@@ -60,11 +60,11 @@ async function Redeem(req, res) {
 }
 
 async function AddPoints(req, res) {
-    const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreAdminId);
+    const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreId);
     let Points = query.Points;
-    const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, undefined, undefined, undefined, 1, ["CategoryID", "==", req.body.CategoryId])
+    const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
     Points = Points + req.body.Amount * data.Percentage
-    await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreAdminId)
+    await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreId)
     return res.json(true)
 }
 

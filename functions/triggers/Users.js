@@ -2,10 +2,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const db = admin.firestore();
 const common = require('../common');
-
-
-
-
+const moment = require('moment');
 
 exports.OnUsersCreate = functions.firestore
     .document("Users/{docid}")
@@ -32,7 +29,6 @@ exports.OnUsersUpdate = functions.firestore
 exports.OnPointsUpdate = functions.firestore
     .document("Users/{userid}/StoreAdmins/{docid}")
     .onUpdate(async (change, context) => {
-        const docid = context.params.docid;
         const userid = context.params.userid;
         const dataold = change.before.data()
         const datanew = change.after.data()

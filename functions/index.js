@@ -26,3 +26,4 @@ exports.OnStoreAdminsUpdate = StoreAdminsTriggers.OnStoreAdminsUpdate
 const UsersTriggers = require('./triggers/Users')
 exports.OnUsersCreate = UsersTriggers.OnUsersCreate
 exports.OnUsersUpdate = UsersTriggers.OnUsersUpdate
+exports.OnPointsUpdate = UsersTriggers.OnPointsUpdate
