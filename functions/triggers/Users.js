@@ -44,7 +44,7 @@ exports.OnPointsUpdate = functions.firestore
                 index: Date.now()
             })
             await db.collection("StoreAdmins").doc(docid).collection("AddHistory").add({
-                Date: moment().tz('Asia/Kolkata').format('YYYY-MMMM-DD'),
+                Date: moment().format('YYYY-MMMM-DD'),
                 Points: Points,
                 index: Date.now()
             })

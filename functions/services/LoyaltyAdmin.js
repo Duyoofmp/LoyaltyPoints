@@ -102,7 +102,7 @@ async function OrderComplete(req, res) {
     if (flag === 0) {
         console.log("test7")
 
-        order_data = await instance.orders.fetch(order_id)
+      const  order_data = await instance.orders.fetch(order_id)
 
         Amount_Payable = OrderData.Amount * 100;
         if (order_data.status === "paid" && order_data.amount === order_data.amount_paid && order_data.amount_due === 0 && Amount_Payable === order_data.amount_paid) {
