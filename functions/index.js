@@ -5,6 +5,10 @@ admin.initializeApp({
     credential: admin.credential.cert(ServiceAccount)
 });
 
+
+const Loyalty = require('./api/LoyaltyAdmin')
+exports.Loyalty = Loyalty.Loyalty
+
 const Staffs = require('./api/Staffs')
 exports.Staffs = Staffs.Staffs
 

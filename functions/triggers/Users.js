@@ -38,13 +38,13 @@ exports.OnPointsUpdate = functions.firestore
         const Points = datanew.Points - dataold.Points
         if (Points > 0) {
             await db.collection("Users").doc(userid).collection("AddHistory").add({
-                Date: moment().format('YYYY MMMM Do'),
+                Date: moment().format('YYYY-MMMM-DD'),
                 Points: Points,
                 StoreAdminId:docid,
                 index: Date.now()
             })
             await db.collection("StoreAdmins").doc(docid).collection("AddHistory").add({
-                Date: moment().format('YYYY MMMM Do'),
+                Date: moment().tz('Asia/Kolkata').format('YYYY-MMMM-DD'),
                 Points: Points,
                 index: Date.now()
             })
