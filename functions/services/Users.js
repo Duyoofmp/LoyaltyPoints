@@ -1,7 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const dataHandling = require("../functions");
-const { createKeywords } = require('../common');
 const moment = require('moment');
 
 async function Create(req, res) {
@@ -64,13 +63,13 @@ async function Redeem(req, res) {
     Points = Points - req.body.Points;
     await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreId)
     await admin.firestore().collection("Users").doc(req.body.DocId).collection("RedeemHistory").add({
-        Date: moment().format('YYYY-MMMM-DD'),
+        Date: moment().tz('Asia/Kolkata').format('YYYY-MMMM-DD'),
         Points: req.body.Points,
         StoreAdminId: req.body.StoreId,
         index: Date.now()
     })
     await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("RedeemHistory").add({
-        Date: moment().format('YYYY-MMMM-DD'),
+        Date: moment().tz('Asia/Kolkata').format('YYYY-MMMM-DD'),
         Points: req.body.Points,
         index: Date.now()
     })

@@ -7,7 +7,7 @@ async function Create(collectionName, data, docName,) {
         try {
             if (docName !== undefined) {
 
-                await db.collection(collectionName).doc(docName).set(data);
+                await db.collection(collectionName).doc(docName).set(data,{"merge":true });
                 resolve(true);
             } else {
                 const done = await db.collection(collectionName).add(data);
