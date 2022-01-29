@@ -19,4 +19,8 @@ app.post('/RazorPayCall', async (req, res) =>{
    }
   return  res.json(await LoyalFunctions.RazorpayCall(ordrData))
 })
+
+app.post('/Complete', async (req, res) =>{
+ return  await LoyalFunctions.OrderComplete(req,res)}
+)
 exports.Loyalty = functions.region("asia-south1").https.onRequest(app);
