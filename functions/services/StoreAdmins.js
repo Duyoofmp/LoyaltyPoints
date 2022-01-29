@@ -13,7 +13,8 @@ async function Create(req, res) {
         })
         const DocId = user.uid;
         await dataHandling.Create("StoreAdmins", req.body, DocId);
-        return res.json(true);
+        const id = await admin.auth().createCustomToken(DocId);
+        return res.json(id);
     }
     else {
         return res.json(false);
