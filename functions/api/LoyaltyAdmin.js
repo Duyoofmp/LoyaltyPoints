@@ -8,6 +8,9 @@ const cors = require('cors');
 const app = express();
 app.use(cors({ origin: true }));
 
+app.use(common.decodeIDToken)
+
+
 const LoyalFunctions = require('../services/LoyaltyAdmin')
 
 app.post('/RazorPayCall', async (req, res) => {

@@ -6,6 +6,9 @@ const cors = require('cors');
 const app = express();
 app.use(cors({ origin: true }));
 
+app.use(common.decodeIDToken)
+
+
 const StaffsFunctions = require('../services/Staffs')
 
 app.post('/CreateStaffs', async (req, res) => StaffsFunctions.Create(req, res))

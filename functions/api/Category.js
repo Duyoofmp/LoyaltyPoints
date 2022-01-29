@@ -6,6 +6,9 @@ const cors = require('cors');
 const app = express();
 app.use(cors({ origin: true }));
 
+app.use(common.decodeIDToken)
+
+
 const CategoryFunctions = require('../services/Category')
 
 app.post('/CreateCategory', async (req, res) => CategoryFunctions.Create(req, res))
