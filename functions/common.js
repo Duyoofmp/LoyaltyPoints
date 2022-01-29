@@ -56,8 +56,18 @@ async function decodeIDToken(req, res, next) {
   }
 
 
+  function decodeIDTokenForLogin(req, res, next) {
+    if (req.body.blahblah === 'blahblah') {
+      functions.logger.log("coldstart");
+      return res.json('coldstart')
+    }
+    functions.logger.log(req.path);
+    return next();
+  }
+
 module.exports = {
     createKeywords,
-    decodeIDToken
+    decodeIDToken,
+    decodeIDTokenForLogin
     
 }

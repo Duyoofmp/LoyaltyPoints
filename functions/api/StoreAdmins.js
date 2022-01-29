@@ -6,9 +6,8 @@ const cors = require('cors');
 const app = express();
 app.use(cors({ origin: true }));
 
-app.post('/CreateStoreAdmins', async (req, res) => StoreAdminsFunctions.Create(req, res))
 
-app.use(common.decodeIDToken)
+//app.use(common.decodeIDToken)
 
 
 const StoreAdminsFunctions = require('../services/StoreAdmins')
@@ -29,3 +28,12 @@ app.post('/ReadRedeemHistory', async(req,res)=> StoreAdminsFunctions.ReadRedeemH
 
 
 exports.StoreAdmins = functions.region("asia-south1").https.onRequest(app);
+
+
+
+
+const app3 = express();
+app3.use(cors({ origin: true }));
+app3.use(common.decodeIDTokenForLogin)
+app3.post('/SignUp', async (req, res) => StoreAdminsFunctions.Create(req, res))
+exports.LoginForStoreAdmin = functions.region("asia-south1").https.onRequest(app3);
