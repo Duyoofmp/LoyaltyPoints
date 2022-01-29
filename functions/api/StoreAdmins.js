@@ -7,7 +7,7 @@ const app = express();
 app.use(cors({ origin: true }));
 
 
-//app.use(common.decodeIDToken)
+app.use(common.decodeIDToken)
 
 
 const StoreAdminsFunctions = require('../services/StoreAdmins')
