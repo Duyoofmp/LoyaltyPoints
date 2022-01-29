@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const dataHandling = require("../functions");
 const moment = require('moment');
-
+const common= require('../common')
 const express = require('express');
 const cors = require('cors');
 const app = express();
