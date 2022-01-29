@@ -9,11 +9,12 @@ async function Create(req, res) {
         const PhoneNumber = req.body.PhoneNumber;
         const user = await admin.auth().createUser({
             phoneNumber: PhoneNumber,
-            displayName: req.body.StoreAdminName
+            displayName: req.body.Username
         })
         const DocId = user.uid;
         await dataHandling.Create("StoreAdmins", req.body, DocId);
-        return res.json(true);
+        const id = await admin.auth().createCustomToken(DocId);
+        return res.json(id);
     }
     else {
         return res.json(false);

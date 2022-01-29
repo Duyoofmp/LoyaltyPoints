@@ -11,28 +11,25 @@ async function Create(req, res) {
     }
     const Amount = req.body.Amount;
     delete req.body.Amount;
-    const check = await dataHandling.WhereGet("Users", "Username", req.body.Username)
-    if (check) {
-        const PhoneNumber = req.body.PhoneNumber
-        const user = await admin.auth().createUser({
-            phoneNumber: PhoneNumber,
-            displayName: req.body.UserName
-        })
-        const DocId = user.uid;
-        let point = 0;
-        const data = await dataHandling.Create("Users", req.body, DocId);
-        if (Amount !== undefined) {
-            const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
-            point = Amount * data.Percentage
-        }
-        await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
-            Points: point,
-        }, { merge: true })
-        return res.json(true);
+
+    const PhoneNumber = req.body.PhoneNumber
+    const user = await admin.auth().createUser({
+        phoneNumber: PhoneNumber,
+        displayName: req.body.UserName
+    })
+    const DocId = user.uid;
+    let point = 0;
+    const data = await dataHandling.Create("Users", req.body, DocId);
+    if (Amount !== undefined) {
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
+        point = Amount * data.Percentage
     }
-    else {
-        return res.json(false)
-    }
+    await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
+        Points: point,
+    }, { merge: true })
+    return res.json(true);
+
+
 }
 
 async function Update(req, res) {
