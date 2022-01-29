@@ -18,6 +18,10 @@ exports.Users = Users.Users
 const StoreAdmins = require('./api/StoreAdmins')
 exports.StoreAdmins = StoreAdmins.StoreAdmins
 
+const LoginForStoreAdmin = require('./api/StoreAdmins')
+exports.LoginForStoreAdmin = LoginForStoreAdmin.LoginForStoreAdmin
+
+
 const Category = require('./api/Category')
 exports.Category = Category.Category
 

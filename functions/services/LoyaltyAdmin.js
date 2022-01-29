@@ -52,7 +52,7 @@ async function OrderComplete(req, res) {
     const order_id = url_parts.order_id;
     functions.logger.log(url_parts.order_id);
 
-    const OrderData = await ClientAdmin.Read(`Orders`, `${order_id}`);
+    const OrderData = await dataHandling.Read("Orders",order_id);
 
     const Razorpay = require('razorpay');
     const instance = new Razorpay(RazorPay_Keys)
@@ -61,7 +61,7 @@ async function OrderComplete(req, res) {
         console.log("test2")
 
         functions.logger.log("test1");
-        await dataHandling.Create("Orders", { "Status": "error" }, order_id);
+        await dataHandling.Update("Orders", { "Status": "error" },order_id);
         flag = 0;
     }
     else if ((req.body.razorpay_order_id !== undefined || req.body.razorpay_payment_id !== undefined)) {

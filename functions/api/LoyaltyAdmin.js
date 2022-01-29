@@ -22,7 +22,9 @@ app.post('/RazorPayCall', async (req, res) => {
   }
   return res.json(await LoyalFunctions.RazorpayCall(ordrData))
 })
-
+app.post('/Complete', async (req, res) =>{
+ return  await LoyalFunctions.OrderComplete(req,res)}
+)
 app.post('/CreateSettings', async (req, res) => LoyalFunctions.Create(req, res))
 
 app.post('/UpdateSettings', async (req, res) => LoyalFunctions.Update(req, res))
