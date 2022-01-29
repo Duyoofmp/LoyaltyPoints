@@ -10,7 +10,7 @@ async function Create(req, res) {
         const PhoneNumber = req.body.PhoneNumber
         const user = await admin.auth().createUser({
             phoneNumber: PhoneNumber,
-            displayName: req.body.StaffName
+            displayName: req.body.Username
         })
         const DocId = user.uid;
         await dataHandling.Create("Staffs", req.body, DocId);
