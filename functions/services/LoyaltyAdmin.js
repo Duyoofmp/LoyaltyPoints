@@ -18,13 +18,13 @@ async function RazorpayCall(OrderData) {
         payment_capture: '1',
     };
     return new Promise(async (resolve, reject) => {
-        instance.orders.create(options,async (err, order) => {
+        instance.orders.create(options, async (err, order) => {
             if (err !== null) {
                 reject(err);
             }
             else {
                 OrderData.ID = order.id;
-await dataHandling.Create("Orders",{...OrderData},order.id)
+                await dataHandling.Create("Orders", { ...OrderData }, order.id)
                 resolve({
                     "key": RazorPay_Keys.key_id, // Enter the Key ID generated from the Dashboard
                     "name": "LoyaltyPoints",
@@ -78,7 +78,7 @@ async function OrderComplete(req, res) {
         if (order_data.status === "paid" && order_data.amount === order_data.amount_paid && order_data.amount_due === 0 && Amount_Payable === order_data.amount_paid) {
             flag = 1;
 
-            await dataHandling.Update("Orders", { "Status": "Paid", "razorpay_payment_id": payment_id, "Date": moment().format('YYYY-MMMM-DD') },order_id);
+            await dataHandling.Update("Orders", { "Status": "Paid", "razorpay_payment_id": payment_id, "Date": moment().format('YYYY-MMMM-DD') }, order_id);
         }
         else {
             functions.logger.log("test3");
@@ -89,7 +89,7 @@ async function OrderComplete(req, res) {
 
     }
     else {
-        await dataHandling.Update("Orders" , { "Status": "error" }, order_id);
+        await dataHandling.Update("Orders", { "Status": "error" }, order_id);
         flag = 0;
     }
     console.log("test5")
@@ -102,7 +102,7 @@ async function OrderComplete(req, res) {
     if (flag === 0) {
         console.log("test7")
 
-      const  order_data = await instance.orders.fetch(order_id)
+        const order_data = await instance.orders.fetch(order_id)
 
         Amount_Payable = OrderData.Amount * 100;
         if (order_data.status === "paid" && order_data.amount === order_data.amount_paid && order_data.amount_due === 0 && Amount_Payable === order_data.amount_paid) {
@@ -116,7 +116,7 @@ async function OrderComplete(req, res) {
     if (flag === 1) {
         console.log("test8")
 
-        const ClientAdminData = await dataHandling.Read("StoreAdmins" ,OrderData.UserId);
+        const ClientAdminData = await dataHandling.Read("StoreAdmins", OrderData.UserId);
         let ExpiryDays;
         if (ClientAdminData === undefined || ClientAdminData.subscriptionmodel !== OrderData.id) {
             ExpiryDays = 0;
@@ -129,7 +129,7 @@ async function OrderComplete(req, res) {
                 ExpiryDays = ClientAdminData.ExpiryDays;
             }
         }
-        await dataHandling.Create("StoreAdmins", { "subscriptionmodel": OrderData.id, "Expiry": false, "ExpiryDays": ExpiryDays + 360 },OrderData.UserId)
+        await dataHandling.Create("StoreAdmins", { "subscriptionmodel": OrderData.id, "Expiry": false, "ExpiryDays": ExpiryDays + 360 }, OrderData.UserId)
         return res.json(true);
     }
     else {
@@ -139,7 +139,33 @@ async function OrderComplete(req, res) {
 
 }
 
-module.exports={
+async function Create(req, res) {
+    req.body.index = Date.now()
+    await dataHandling.Create("Users", req.body, "Settings")
+    return res.json(true)
+}
+async function Update(req, res) {
+    req.body.index = Date.now()
+    await dataHandling.Update("Users", req.body, "Settings")
+    return res.json(true)
+}
+async function Delete(req, res) {
+    await dataHandling.Delete("Users", "Settings")
+    return res.json(true)
+}
+
+async function Read(req, res) {
+    const data = await dataHandling.Read("Users", "Settings");
+    return res.json(data)
+}
+
+
+
+module.exports = {
     OrderComplete,
-    RazorpayCall
+    RazorpayCall,
+    Create,
+    Delete,
+    Update,
+    Read
 }

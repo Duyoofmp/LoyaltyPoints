@@ -23,8 +23,41 @@ const createKeywords = (name, resultArr) => {
     }
 }
 
+async function decodeIDToken(req, res, next) {
+    functions.logger.log(req.body)
+  
+    if (req.body.blahblah === 'blahblah') {
+      functions.logger.log("coldstart");
+      return res.json('coldstart')
+    }
+    functions.logger.log(req.path);
+  
+    const idToken = req.body.token;
+  
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      console.log(decodedToken.uid);
+      const adminUid = (await db.collection("Admin").doc("Admin_Info").get()).data().uid
+      if (decodedToken.uid === adminUid) {
+        req.body.UserId = decodedToken.uid;
+        // req.body.token = decodedToken.uid;
+        delete req.body.token;
+        return next();
+      } else {
+        return res.json({ 'message': 'token not verified' });
+  
+      }
+  
+    } catch (err) {
+      functions.logger.error(err);
+      req.body.UserId = '';
+      return res.json({ 'message': 'token not verified', 'error': err });
+    }
+  }
+
 
 module.exports = {
     createKeywords,
+    decodeIDToken
     
 }

@@ -21,6 +21,9 @@ exports.StoreAdmins = StoreAdmins.StoreAdmins
 const Category = require('./api/Category')
 exports.Category = Category.Category
 
+const LoyaltyAdmin = require('./api/LoyaltyAdmin')
+exports.LoyaltyAdmin = LoyaltyAdmin.Loyalty
+
 const StaffsTriggers = require('./triggers/Staffs')
 exports.OnStaffsCreate = StaffsTriggers.OnStaffsCreate
 exports.OnStaffsUpdate = StaffsTriggers.OnStaffsUpdate
