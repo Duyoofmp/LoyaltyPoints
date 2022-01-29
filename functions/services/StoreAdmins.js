@@ -3,29 +3,35 @@ const admin = require('firebase-admin');
 const dataHandling = require("../functions");
 
 async function Create(req, res) {
-        req.body.index = Date.now();
+    req.body.index = Date.now();
+    req.body.PaymentStatus = false;
+    req.body.Expiry = false;
     const check = await dataHandling.WhereGet("StoreAdmins", "Username", req.body.Username)
     if (check) {
-       
+
         admin.auth().createUser({
-            phoneNumber: String(req.body.PhoneNumber),
+            phoneNumber: String(req.body.CountryCode + req.body.PhoneNumber),
             displayName: req.body.Username
-        }).then(async (snap)=>{
+        }).then(async (snap) => {
             const DocId = snap.uid;
             await dataHandling.Create("StoreAdmins", req.body, DocId);
             const id = await admin.auth().createCustomToken(DocId);
-            return res.json(id);
-        }).catch(err=>{
-            return res.json("Phone Number Already Exist !");
-            
+            return res.json({
+               "token" : id
+            });
+        }).catch(err => {
+            return res.json({
+                "error":err
+            });
+
         })
-       
+
     }
     else {
-        return res.json(false);
+        return res.json("Username Already exists");
     }
-    
-    
+
+
 }
 
 async function Update(req, res) {
@@ -73,11 +79,29 @@ async function ReadRedeemHistory(req, res) {
     }
 
 }
+
+async function Login(req, res) {
+    const checkuser = await dataHandling.Read("Staffs",undefined,undefined,undefined,undefined,["Username","==",req.body.Username],["desc"])
+    if (checkuser.size ===1) {
+        if (checkuser[0].password === req.body.password) {
+            const id = await admin.auth().createCustomToken(checkuser[0].DocId);
+            return res.json(id)
+        }
+        else {
+            return res.json("Incorrect Password")
+        }
+    }
+    else {
+        return res.json("Invalid Username")
+    }
+}
+
 module.exports = {
     Create,
     Update,
     Delete,
     Read,
     ReadAddHistory,
-    ReadRedeemHistory
+    ReadRedeemHistory,
+    Login
 }

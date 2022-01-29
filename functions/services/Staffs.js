@@ -7,9 +7,9 @@ async function Create(req, res) {
     req.body.index = Date.now();
     const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
     if (check) {
-        const PhoneNumber = req.body.PhoneNumber
+        const PhoneNumber = req.body.CountryCode + req.body.PhoneNumber
         const user = await admin.auth().createUser({
-            phoneNumber: PhoneNumber,
+            phoneNumber: String(PhoneNumber),
             displayName: req.body.Username
         })
         const DocId = user.uid;
@@ -43,9 +43,26 @@ async function Read(req, res) {
     return res.json(data)
 }
 
+async function Login(req, res) {
+    const checkuser = await dataHandling.Read("Staffs", undefined, undefined, undefined, undefined, ["Username", "==", req.body.Username], ["desc"])
+    if (checkuser.size === 1) {
+        if (checkuser[0].password === req.body.password) {
+            const id = await admin.auth().createCustomToken(checkuser[0].DocId);
+            return res.json(id)
+        }
+        else {
+            return res.json("Incorrect Password")
+        }
+    }
+    else {
+        return res.json("Invalid Username")
+    }
+}
+
 module.exports = {
     Create,
     Update,
     Delete,
-    Read
+    Read,
+    Login
 }

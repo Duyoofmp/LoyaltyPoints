@@ -6,8 +6,8 @@ admin.initializeApp({
 });
 
 
-const Loyalty = require('./api/LoyaltyAdmin')
-exports.Loyalty = Loyalty.Loyalty
+//const Loyalty = require('./api/LoyaltyAdmin')
+//exports.Loyalty = Loyalty.Loyalty
 
 const Staffs = require('./api/Staffs')
 exports.Staffs = Staffs.Staffs
@@ -21,12 +21,14 @@ exports.StoreAdmins = StoreAdmins.StoreAdmins
 const LoginForStoreAdmin = require('./api/StoreAdmins')
 exports.LoginForStoreAdmin = LoginForStoreAdmin.LoginForStoreAdmin
 
+const LoginForStaff = require('./api/Staffs')
+exports.LoginForStaff = LoginForStaff.LoginForStaff
+
 
 const Category = require('./api/Category')
 exports.Category = Category.Category
 
-const LoyaltyAdmin = require('./api/LoyaltyAdmin')
-exports.LoyaltyAdmin = LoyaltyAdmin.Loyalty
+
 
 const StaffsTriggers = require('./triggers/Staffs')
 exports.OnStaffsCreate = StaffsTriggers.OnStaffsCreate

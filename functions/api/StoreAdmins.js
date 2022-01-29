@@ -36,4 +36,6 @@ const app3 = express();
 app3.use(cors({ origin: true }));
 app3.use(common.decodeIDTokenForLogin)
 app3.post('/SignUp', async (req, res) => StoreAdminsFunctions.Create(req, res))
+
+app3.post('/Login',async (req,res)=> StoreAdminsFunctions.Login(req,res))
 exports.LoginForStoreAdmin = functions.region("asia-south1").https.onRequest(app3);
