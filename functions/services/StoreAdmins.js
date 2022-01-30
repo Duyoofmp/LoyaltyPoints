@@ -10,7 +10,7 @@ async function Create(req, res) {
     if (check) {
 
         admin.auth().createUser({
-            phoneNumber: String(req.body.CountryCode + req.body.PhoneNumber),
+            phoneNumber: String(req.body.CountryCode) + String(req.body.PhoneNumber),
             displayName: req.body.Username
         }).then(async (snap) => {
             const DocId = snap.uid;
