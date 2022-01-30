@@ -37,6 +37,9 @@ exports.OnStaffsUpdate = StaffsTriggers.OnStaffsUpdate
 const StoreAdminsTriggers = require('./triggers/StoreAdmins')
 exports.OnStoreAdminsCreate = StoreAdminsTriggers.OnStoreAdminsCreate
 exports.OnStoreAdminsUpdate = StoreAdminsTriggers.OnStoreAdminsUpdate
+exports.scheduledFunctionForExpiry = StoreAdminsTriggers.scheduledFunctionForExpiry
+
+
 
 
 const UsersTriggers = require('./triggers/Users')
