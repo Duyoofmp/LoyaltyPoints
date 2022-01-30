@@ -6,8 +6,8 @@ admin.initializeApp({
 });
 
 
-//const Loyalty = require('./api/LoyaltyAdmin')
-//exports.Loyalty = Loyalty.Loyalty
+const Loyalty = require('./api/LoyaltyAdmin')
+exports.Loyalty = Loyalty.Loyalty
 
 const Staffs = require('./api/Staffs')
 exports.Staffs = Staffs.Staffs
@@ -37,6 +37,9 @@ exports.OnStaffsUpdate = StaffsTriggers.OnStaffsUpdate
 const StoreAdminsTriggers = require('./triggers/StoreAdmins')
 exports.OnStoreAdminsCreate = StoreAdminsTriggers.OnStoreAdminsCreate
 exports.OnStoreAdminsUpdate = StoreAdminsTriggers.OnStoreAdminsUpdate
+exports.scheduledFunctionForExpiry = StoreAdminsTriggers.scheduledFunctionForExpiry
+
+
 
 
 const UsersTriggers = require('./triggers/Users')

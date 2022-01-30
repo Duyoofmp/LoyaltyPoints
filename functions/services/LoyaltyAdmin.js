@@ -118,7 +118,7 @@ async function OrderComplete(req, res) {
 
         const ClientAdminData = await dataHandling.Read("StoreAdmins", OrderData.UserId);
         let ExpiryDays;
-        if (ClientAdminData === undefined || ClientAdminData.subscriptionmodel !== OrderData.id) {
+        if (ClientAdminData === undefined ) {
             ExpiryDays = 0;
         }
         else {
@@ -129,7 +129,7 @@ async function OrderComplete(req, res) {
                 ExpiryDays = ClientAdminData.ExpiryDays;
             }
         }
-        await dataHandling.Create("StoreAdmins", { "subscriptionmodel": OrderData.id, "Expiry": false, "ExpiryDays": ExpiryDays + 360 }, OrderData.UserId)
+        await dataHandling.Update("StoreAdmins", { "PaymentStatus":true,"Expiry": false, "ExpiryDays": ExpiryDays + 360 }, OrderData.UserId)
         return res.json(true);
     }
     else {

@@ -15,7 +15,9 @@ const LoyalFunctions = require('../services/LoyaltyAdmin')
 
 app.post('/RazorPayCall', async (req, res) => {
   const set = await dataHandling.Read("LoyaltyAdmin", "Settings")
+  console.log("UserId kittyo.."+req.body.UserId)
   const ordrData = {
+    UserId:req.body.UserId,
     Amount: set.Amount,
     index: Date.now(),
     OrderDate: moment().format("YYYY-MM-DD")
