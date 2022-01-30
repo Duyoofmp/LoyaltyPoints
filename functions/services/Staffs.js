@@ -55,13 +55,13 @@ async function Login(req, res) {
         }
         else {
             return res.json({
-                "error": "Incorrect Password"
+                "message": "Incorrect Password"
             })
         }
     }
     else {
         return res.json({
-            "error": "Invalid Username"
+            "message": "Invalid Username"
         })
     }
 }

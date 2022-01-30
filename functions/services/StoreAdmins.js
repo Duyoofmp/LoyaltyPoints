@@ -21,7 +21,7 @@ async function Create(req, res) {
             });
         }).catch(err => {
             return res.json({
-                "error": err
+                "message": err
             });
 
         })
@@ -92,13 +92,13 @@ async function Login(req, res) {
         }
         else {
             return res.json({
-                "error": "Incorrect Password"
+                "message": "Incorrect Password"
             })
         }
     }
     else {
         return res.json({
-            "error": "Invalid Username"
+            "message": "Invalid Username"
         })
     }
 }
