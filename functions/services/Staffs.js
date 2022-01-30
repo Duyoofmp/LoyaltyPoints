@@ -45,17 +45,24 @@ async function Read(req, res) {
 
 async function Login(req, res) {
     const checkuser = await dataHandling.Read("Staffs", undefined, undefined, undefined, undefined, ["Username", "==", req.body.Username], ["desc"])
-    if (checkuser.size === 1) {
+    if (checkuser.length === 1) {
         if (checkuser[0].password === req.body.password) {
             const id = await admin.auth().createCustomToken(checkuser[0].DocId);
-            return res.json(id)
+            return res.json({
+                "token": id,
+                "role": "Staff"
+            })
         }
         else {
-            return res.json("Incorrect Password")
+            return res.json({
+                "error": "Incorrect Password"
+            })
         }
     }
     else {
-        return res.json("Invalid Username")
+        return res.json({
+            "error": "Invalid Username"
+        })
     }
 }
 

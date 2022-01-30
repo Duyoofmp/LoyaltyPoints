@@ -37,16 +37,16 @@ async function decodeIDToken(req, res, next) {
     try {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
       console.log(decodedToken.uid);
-      const adminUid = (await db.collection("Admin").doc("Admin_Info").get()).data().uid
-      if (decodedToken.uid === adminUid) {
+     // const adminUid = (await db.collection("Admin").doc("Admin_Info").get()).data().uid
+     // if (decodedToken.uid === adminUid) 
         req.body.UserId = decodedToken.uid;
         // req.body.token = decodedToken.uid;
         delete req.body.token;
         return next();
-      } else {
-        return res.json({ 'message': 'token not verified' });
+      // else {
+      //  return res.json({ 'message': 'token not verified' });
   
-      }
+     // }
   
     } catch (err) {
       functions.logger.error(err);

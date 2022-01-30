@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const common= require('../common')
+const common = require('../common')
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -22,7 +22,7 @@ app.post('/DeleteStoreAdmins', async (req, res) => StoreAdminsFunctions.Delete(r
 
 app.post('/ReadAddHistory', async (req, res) => StoreAdminsFunctions.ReadAddHistory(req, res))
 
-app.post('/ReadRedeemHistory', async(req,res)=> StoreAdminsFunctions.ReadRedeemHistory(req,res))
+app.post('/ReadRedeemHistory', async (req, res) => StoreAdminsFunctions.ReadRedeemHistory(req, res))
 
 
 
@@ -37,5 +37,5 @@ app3.use(cors({ origin: true }));
 app3.use(common.decodeIDTokenForLogin)
 app3.post('/SignUp', async (req, res) => StoreAdminsFunctions.Create(req, res))
 
-app3.post('/Login',async (req,res)=> StoreAdminsFunctions.Login(req,res))
+app3.post('/Login', async (req, res) => StoreAdminsFunctions.Login(req, res))
 exports.LoginForStoreAdmin = functions.region("asia-south1").https.onRequest(app3);
