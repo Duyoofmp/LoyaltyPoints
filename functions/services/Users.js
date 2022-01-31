@@ -5,31 +5,46 @@ const moment = require('moment');
 
 async function Create(req, res) {
     req.body.index = Date.now();
-    if (req.body.StaffId !== undefined) {
-        let query = await dataHandling.Read("Staffs", req.body.StaffId);
-        req.body.StoreAdminId = query.StoreAdminId
-    }
-    const Amount = req.body.Amount;
-    delete req.body.Amount;
+    /*   if (req.body.StaffId !== undefined) {
+           let query = await dataHandling.Read("Staffs", req.body.StaffId);
+           req.body.StoreAdminId = query.StoreAdminId
+       }*/
 
-    const PhoneNumber = req.body.PhoneNumber
-    const user = await admin.auth().createUser({
+
+    const PhoneNumber = String(req.body.CountryCode) + String(req.body.PhoneNumber);
+    admin.auth().createUser({
         phoneNumber: PhoneNumber,
         displayName: req.body.UserName
+    }).then(async snap => {
+        const DocId = snap.uid;
+        let point = 0;
+        if (req.body.Amount !== undefined) {
+            const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
+            point = req.body.Amount * data.Percentage
+            delete req.body.Amount;
+            delete req.body.CategoryId
+        }
+        let StoreAdminIds = [];
+        let StaffIds = [];
+        const StoreAdminId = req.body.StoreAdminId;
+        delete req.body.StoreAdminId;
+        StoreAdminIds.push(StoreAdminId)
+        req.body.StoreAdminIds = StoreAdminIds
+        const StaffId = req.body.StaffId;
+        delete req.body.StaffId;
+        StaffIds.push(StaffId);
+        req.body.StaffIds = StaffIds
+        await dataHandling.Create("Users", req.body, DocId);
+        await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(StoreAdminId).set({
+            "Points": point,
+            "StaffId": StaffId
+        }, { merge: true })
+        return res.json(true);
+    }).catch(err => {
+        return res.json({
+            "message": err
+        })
     })
-    const DocId = user.uid;
-    let point = 0;
-    const data = await dataHandling.Create("Users", req.body, DocId);
-    if (Amount !== undefined) {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
-        point = Amount * data.Percentage
-    }
-    await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
-        Points: point,
-    }, { merge: true })
-    return res.json(true);
-
-
 }
 
 async function Update(req, res) {
@@ -107,6 +122,20 @@ async function ReadRedeemHistory(req, res) {
 
 }
 
+async function ReadStoreUsers(req, res) {
+    if (req.body.StaffId !== undefined) {
+        const data = await dataHandling.Read("Users", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["StaffIds", "array-contains", req.body.StaffId], [true, "index", "desc"])
+        delete data.StaffIds;
+        delete data.StoreAdminIds
+        return res.json(data)
+    }
+    else {
+        const data = await dataHandling.Read("Users", req.body.UserId, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminIds", "array-contains", req.body.StoreAdminId], [true, "index", "desc"]);
+        return res.json(data)
+    }
+
+}
+
 module.exports = {
     Create,
     Update,
@@ -115,5 +144,6 @@ module.exports = {
     Redeem,
     AddPoints,
     ReadAddHistory,
-    ReadRedeemHistory
+    ReadRedeemHistory,
+    ReadStoreUsers
 }
