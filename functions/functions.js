@@ -81,6 +81,8 @@ async function Read(collectionName, docName, index, Keyword, limit = 10, where, 
                     if (doc.exists) {
                         const r = doc.data();
                         delete r.Keywords;
+                        delete r.StaffIds;
+                        delete r.StoreAdminIds;
                         temp.push({ ...r, DocId: doc.id });
                     }
                 });

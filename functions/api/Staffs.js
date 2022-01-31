@@ -19,6 +19,8 @@ app.post('/UpdateStaffs', async (req, res) => StaffsFunctions.Update(req, res))
 
 app.post('/DeleteStaffs', async (req, res) => StaffsFunctions.Delete(req, res))
 
+app.post('/ReadStoreStaffs', async (req, res) => StaffsFunctions.ReadStoreStaffs(req, res))
+
 exports.Staffs = functions.region("asia-south1").https.onRequest(app);
 
 const app3 = express();

@@ -28,7 +28,9 @@ async function Create(req, res) {
 
     }
     else {
-        return res.json("Username Already exists");
+        return res.json({
+            "message": "Username Already exists"
+        });
     }
 
 
@@ -41,7 +43,9 @@ async function Update(req, res) {
         await dataHandling.Update("StoreAdmins", req.body, req.body.DocId)
         return res.json(true)
     } else {
-        return res.json("Username Already exists")
+        return res.json({
+            "message": "Username Already exists"
+        })
     }
 }
 

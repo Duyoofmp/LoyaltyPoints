@@ -8,27 +8,50 @@ async function Create(req, res) {
     const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
     if (check) {
         const PhoneNumber = req.body.CountryCode + req.body.PhoneNumber
-        const user = await admin.auth().createUser({
+        admin.auth().createUser({
             phoneNumber: String(PhoneNumber),
             displayName: req.body.Username
+        }).then(async (snap) => {
+            const DocId = snap.uid;
+            await dataHandling.Create("Staffs", req.body, DocId)
+            const id = await admin.auth().createCustomToken(DocId);
+            return res.json(true);
+        }).catch(err => {
+            return res.json({
+                "message": err
+            })
         })
-        const DocId = user.uid;
-        await dataHandling.Create("Staffs", req.body, DocId);
-        return res.json(true);
     }
     else {
-        return res.json(false);
+        return res.json({
+            "message": "Username Already Exists"
+        });
     }
 }
 
 async function Update(req, res) {
     req.body.index = Date.now()
-    const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
-    if (check) {
+    if (req.body.Username !== undefined) {
+        const check = await dataHandling.WhereGet("Staffs", "Username", req.body.Username)
+        if (!check) {
+            const data = await dataHandling.Read("Staffs", req.body.DocId);
+            if (data.Username === req.body.Username) {
+                await dataHandling.Update("Staffs", req.body, req.body.DocId)
+                return res.json(true)
+            } else {
+                return res.json({
+                    "message": "Username Already exists"
+                })
+            }
+        } else {
+            return res.json({
+                "message": "No Staff With Username"
+            })
+        }
+
+    } else {
         await dataHandling.Update("Staffs", req.body, req.body.DocId)
         return res.json(true)
-    } else {
-        return res.json("Username Already exists")
     }
 }
 
@@ -66,10 +89,17 @@ async function Login(req, res) {
     }
 }
 
+async function ReadStoreStaffs(req, res) {
+    const data = await dataHandling.Read("Staffs", req.body.UserId, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminId", "==", req.body.StoreAdminId], ["desc"]);
+    delete data.Keywords
+    return res.json(data)
+}
+
 module.exports = {
     Create,
     Update,
     Delete,
     Read,
+    ReadStoreStaffs,
     Login
 }
