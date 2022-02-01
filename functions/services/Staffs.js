@@ -61,8 +61,7 @@ async function Delete(req, res) {
 }
 
 async function Read(req, res) {
-    const data = await dataHandling.Read("Staffs", req.body.UserId, req.body.index, req.body.Keyword, req.body.limit)
-    delete data.Keywords
+    const data = await dataHandling.Read("Staffs", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit)
     return res.json(data)
 }
 
@@ -90,8 +89,7 @@ async function Login(req, res) {
 }
 
 async function ReadStoreStaffs(req, res) {
-    const data = await dataHandling.Read("Staffs", req.body.UserId, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminId", "==", req.body.StoreAdminId], ["desc"]);
-    delete data.Keywords
+    const data = await dataHandling.Read("Staffs", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminId", "==", req.body.StoreAdminId], [true, "index", "desc"]);
     return res.json(data)
 }
 
