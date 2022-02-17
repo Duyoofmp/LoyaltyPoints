@@ -61,11 +61,11 @@ async function Read(req, res) {
 
 async function ReadAddHistory(req, res) {
     if (req.body.Date !== undefined) {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date], ["desc"])
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date, "UserId", "==", req.body.DocId], ["desc"])
         return res.json(data)
     }
     else {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, undefined, ["desc"])
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/AddHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["UserId", "==", req.body.DocId], ["desc"])
         return res.json(data)
     }
 
@@ -73,11 +73,11 @@ async function ReadAddHistory(req, res) {
 
 async function ReadRedeemHistory(req, res) {
     if (req.body.Date !== undefined) {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date], ["desc"])
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date, "UserId", "==", req.body.DocId], ["desc"])
         return res.json(data)
     }
     else {
-        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, undefined, "desc")
+        const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/RedeemHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["UserId", "==", req.body.DocId], "desc")
         return res.json(data)
     }
 

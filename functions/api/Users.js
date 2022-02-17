@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const common= require('../common')
+const common = require('../common')
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -24,9 +24,11 @@ app.post('/AddPoints', async (req, res) => UsersFunctions.AddPoints(req, res))
 
 app.post('/ReadAddHistory', async (req, res) => UsersFunctions.ReadAddHistory(req, res))
 
-app.post('/ReadRedeemHistory', async(req,res)=> UsersFunctions.ReadRedeemHistory(req,res))
+app.post('/ReadRedeemHistory', async (req, res) => UsersFunctions.ReadRedeemHistory(req, res))
 
-app.post('/ReadStoreUsers', async(req,res)=> UsersFunctions.ReadStoreUsers(req,res))
+app.post('/ReadStoreUsers', async (req, res) => UsersFunctions.ReadStoreUsers(req, res))
+
+app.post('/SendOtp', async (req, res) => UsersFunctions.SendOtp(req, res))
 
 
 

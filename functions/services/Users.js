@@ -2,17 +2,13 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const dataHandling = require("../functions");
 const moment = require('moment');
+const common = require('../common')
 
 async function Create(req, res) {
     let StoreAdminIds = [];
     let StaffIds = [];
     req.body.index = Date.now();
     let point = 0;
-    /*   if (req.body.StaffId !== undefined) {
-           let query = await dataHandling.Read("Staffs", req.body.StaffId);
-           req.body.StoreAdminId = query.StoreAdminId
-       }*/
-
     if (req.body.Amount !== undefined) {
         const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
         point = req.body.Amount * data.Percentage
@@ -20,8 +16,7 @@ async function Create(req, res) {
         delete req.body.CategoryId
     }
     const PhoneNumber = String(req.body.CountryCode) + String(req.body.PhoneNumber);
-    req.body.PhoneNumber = PhoneNumber
-    const checkphone = await dataHandling.Read("Users", undefined, undefined, undefined, undefined, ["PhoneNumber", "==", PhoneNumber], ["desc"])
+    const checkphone = await dataHandling.Read("Users", undefined, undefined, undefined, undefined, ["PhoneNumber", "==", req.body.PhoneNumber], ["desc"])
     try {
         if (checkphone.length === 0) {
             const user = await admin.auth().createUser({
@@ -62,30 +57,38 @@ async function Create(req, res) {
             console.log(checkphone)
             const DocId = checkphone[0].DocId;
             const user = await dataHandling.Read("Users", DocId);
-            if (req.body.StaffId !== undefined) {
-                StoreAdminIds = user.StoreAdminIds;
-                StoreAdminIds.push(req.body.StoreAdminId);
-                StaffIds = user.StaffIds;
-                StaffIds.push(req.body.StaffId)
-                await admin.firestore().collection("Users").doc(DocId).update({
-                    StoreAdminIds: StoreAdminIds,
-                    StaffIds: StaffIds
-                })
-                await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
-                    "Points": point,
-                    "StaffId": req.body.StaffId
-                }, { merge: true })
-                return res.json(true);
+            const check = await common.checkarray("Users", DocId, "StoreAdminIds", req.body.StoreAdminId)
+            if (check) {
+                console.log()
+                if (req.body.StaffId !== undefined) {
+                    StoreAdminIds = user.StoreAdminIds;
+                    StoreAdminIds.push(req.body.StoreAdminId);
+                    StaffIds = user.StaffIds;
+                    StaffIds.push(req.body.StaffId)
+                    await admin.firestore().collection("Users").doc(DocId).update({
+                        StoreAdminIds: StoreAdminIds,
+                        StaffIds: StaffIds
+                    })
+                    await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
+                        "Points": point,
+                        "StaffId": req.body.StaffId
+                    }, { merge: true })
+                    return res.json(true);
+                } else {
+                    StoreAdminIds = user.StoreAdminIds;
+                    StoreAdminIds.push(req.body.StoreAdminId);
+                    await admin.firestore().collection("Users").doc(DocId).update({
+                        StoreAdminIds: StoreAdminIds,
+                    })
+                    await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
+                        "Points": point,
+                    }, { merge: true })
+                    return res.json(true);
+                }
             } else {
-                StoreAdminIds = user.StoreAdminIds;
-                StoreAdminIds.push(req.body.StoreAdminId);
-                await admin.firestore().collection("Users").doc(DocId).update({
-                    StoreAdminIds: StoreAdminIds,
+                return res.json({
+                    message: "User Already Exists"
                 })
-                await admin.firestore().collection("Users").doc(DocId).collection("StoreAdmins").doc(req.body.StoreAdminId).set({
-                    "Points": point,
-                }, { merge: true })
-                return res.json(true);
             }
         }
     }
@@ -104,93 +107,102 @@ async function Update(req, res) {
 
 
 async function Delete(req, res) {
-    await dataHandling.Delete("Users", req.body.DocId)
+    let StoreAdminIds = [];
+    const user = await dataHandling.Read("Users", req.body.DocId);
+    StoreAdminIds = user.StoreAdminIds;
+    const index = await StoreAdminIds.indexOf(req.body.StoreAdminId);
+    StoreAdminIds.splice(index, 1);
+    await dataHandling.Update("Users", { StoreAdminIds: StoreAdminIds }, req.body.DocId);
     return res.json(true)
 }
 
 async function Read(req, res) {
-    const data = await dataHandling.Read("Users", req.body.UserId, req.body.index, req.body.Keyword, req.body.limit)
+    const data = await dataHandling.Read("Users", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit)
     return res.json(data)
 }
 
 async function Redeem(req, res) {
-    const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreAdminId);
-    let Points = query.Points
-    Points = Points - req.body.Points;
-    await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreAdminId)
-    await admin.firestore().collection("Users").doc(req.body.DocId).collection("RedeemHistory").add({
-        Date: moment().format('YYYY-MMMM-DD'),
-        Points: req.body.Points,
-        StoreAdminId: req.body.StoreAdminId,
-        index: Date.now()
-    })
-    await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("RedeemHistory").add({
-        Date: moment().format('YYYY-MMMM-DD'),
-        Points: req.body.Points,
-        UserId: req.body.DocId,
-        index: Date.now()
-    })
-    return res.json(true)
+    const user = await dataHandling.Read("Users", req.body.DocId);
+    if (user.OTP === req.body.OTP) {
+        const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreAdminId);
+        let Points = query.Points
+        if (Points > req.body.Points) {
+            Points = Points - req.body.Points;
+            await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreAdminId)
+            await admin.firestore().collection("Users").doc(req.body.DocId).collection("RedeemHistory").add({
+                Date: moment().format('YYYY-MMMM-DD'),
+                Points: req.body.Points,
+                StoreAdminId: req.body.StoreAdminId,
+                index: Date.now()
+            })
+            await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("RedeemHistory").add({
+                Date: moment().format('YYYY-MMMM-DD'),
+                Points: req.body.Points,
+                UserId: req.body.DocId,
+                index: Date.now()
+            })
+            return res.json(true)
+        } else {
+            return res.json({
+                message: "Insufficient Points"
+            })
+        }
+    } else {
+        return res.json({
+            message: "Wrong Verification Code"
+        })
+    }
 }
 
 async function AddPoints(req, res) {
     const query = await dataHandling.Read(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreAdminId);
     let Points = query.Points;
     const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.CategoryId)
-    Points = Points + req.body.Amount * data.Percentage
+    const points = req.body.Amount * data.Percentage
+    Points = Points + points
     await dataHandling.Update(`Users/${req.body.DocId}/StoreAdmins`, { Points: Points }, req.body.StoreAdminId)
-    await admin.firestore().collection("Users").doc(req.body.DocId).collection("AddHistory").add({
-        Date: moment().format('YYYY-MMMM-DD'),
-        Points: req.body.Points,
-        StoreAdminId: req.body.StoreAdminId,
-        index: Date.now()
-    })
-    await admin.firestore().collection("StoreAdmins").doc(req.body.StoreAdminId).collection("AddHistory").add({
-        Date: moment().format('YYYY-MMMM-DD'),
-        Points: req.body.Points,
-        UserId: req.body.DocId,
-        index: Date.now()
-    })
     return res.json(true)
 }
 
 async function ReadAddHistory(req, res) {
-    if (req.body.Date !== undefined) {
-        const data = await dataHandling.Read(`Users/${req.body.UserId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date], ["desc"])
+    if (req.body.Date === undefined || req.body.Date === "") {
+        const data = await dataHandling.Read(`Users/${req.body.DocId}/AddHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminId", "==", req.body.StoreAdminId], ["desc"])
         return res.json(data)
     }
     else {
-        const data = await dataHandling.Read(`Users/${req.body.UserId}/AddHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, undefined, ["desc"])
-        console.log(data)
+        const data = await dataHandling.Read(`Users/${req.body.DocId}/AddHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date, "StoreAdminId", "==", req.body.StoreAdminId], ["desc"])
         return res.json(data)
     }
 
 }
 
 async function ReadRedeemHistory(req, res) {
-    if (req.body.Date !== undefined) {
-        const data = await dataHandling.Read(`Users/${req.body.UserId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date], ["desc"])
+    if (req.body.Date === undefined || req.body.Date === "") {
+        const data = await dataHandling.Read(`Users/${req.body.DocId}/RedeemHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminId", "==", req.body.StoreAdminId], ["desc"])
         return res.json(data)
     }
     else {
-        const data = await dataHandling.Read(`Users/${req.body.UserId}/RedeemHistory`, req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, undefined, ["desc"])
+        const data = await dataHandling.Read(`Users/${req.body.DocId}/RedeemHistory`, undefined, req.body.index, req.body.Keyword, req.body.limit, ["Date", "==", req.body.Date, "StoreAdminId", "==", req.body.StoreAdminId], ["desc"])
         return res.json(data)
     }
 
 }
 
 async function ReadStoreUsers(req, res) {
-    if (req.body.StaffId !== undefined) {
-        const data = await dataHandling.Read("Users", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["StaffIds", "array-contains", req.body.StaffId], [true, "index", "desc"])
+    if (req.body.StaffId === undefined || req.body.StaffId === "") {
+        const data = await dataHandling.Read("Users", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminIds", "array-contains", req.body.StoreAdminId], [true, "index", "desc"]);
         return res.json(data)
     }
     else {
-        const data = await dataHandling.Read("Users", req.body.UserId, req.body.index, req.body.Keyword, req.body.limit, ["StoreAdminIds", "array-contains", req.body.StoreAdminId], [true, "index", "desc"]);
+        const data = await dataHandling.Read("Users", req.body.DocId, req.body.index, req.body.Keyword, req.body.limit, ["StaffIds", "array-contains", req.body.StaffId], [true, "index", "desc"])
         return res.json(data)
     }
-
 }
 
+async function SendOtp(req, res) {
+    await common.SendOtp(req.body.DocId);
+    return res.json(true)
+}
 module.exports = {
     Create,
     Update,
@@ -200,5 +212,6 @@ module.exports = {
     AddPoints,
     ReadAddHistory,
     ReadRedeemHistory,
-    ReadStoreUsers
+    ReadStoreUsers,
+    SendOtp
 }

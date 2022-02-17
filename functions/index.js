@@ -28,7 +28,17 @@ exports.LoginForStaff = LoginForStaff.LoginForStaff
 const Category = require('./api/Category')
 exports.Category = Category.Category
 
+const Home = require('./api/UserApis/Home')
+exports.Home = Home.Home
 
+const UserStoreAdmin = require('./api/UserApis/StoreAdmin')
+exports.UserStoreAdmin = UserStoreAdmin.StoreAdminUser
+
+const Banners = require('./api/Banners')
+exports.Banners = Banners.Banners
+
+const SuperAdmin = require('./api/SuperAdmin')
+exports.SuperAdmin = SuperAdmin.SuperAdmin
 
 const StaffsTriggers = require('./triggers/Staffs')
 exports.OnStaffsCreate = StaffsTriggers.OnStaffsCreate
