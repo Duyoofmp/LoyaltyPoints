@@ -40,6 +40,9 @@ exports.Banners = Banners.Banners
 const SuperAdmin = require('./api/SuperAdmin')
 exports.SuperAdmin = SuperAdmin.SuperAdmin
 
+const LoginForSuperAdmin = require('./api/SuperAdmin')
+exports.LoginForSuperAdmin = LoginForSuperAdmin.LoginForStoreAdmin
+
 const StaffsTriggers = require('./triggers/Staffs')
 exports.OnStaffsCreate = StaffsTriggers.OnStaffsCreate
 exports.OnStaffsUpdate = StaffsTriggers.OnStaffsUpdate

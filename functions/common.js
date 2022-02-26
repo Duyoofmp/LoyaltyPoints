@@ -96,13 +96,10 @@ async function decodeIDTokenHeader(req, res, next) {
   return console.log('Decode Completed');
 }
 
-async function checkarray(collectionName, docName, array, element) {
+async function checkarray(array, element) {
   let flag = 0;
-  const data = await db.collection(collectionName).doc(docName).get();
-  const dt = data.data();
-  console.log(dt.StoreAdminIds)
-  for (let i = 0; i < dt.StoreAdminIds.length; i++) {
-    if (dt.StoreAdminIds[i] === element)
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === element)
       flag = 1
   }
   if (flag !== 1) {

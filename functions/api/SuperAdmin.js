@@ -12,6 +12,8 @@ app.use(common.decodeIDToken)
 
 const BannerFunctions = require('../services/Banners');
 
+const SuperAdminFunctions = require('../services/SuperAdmin')
+
 app.post('/CreateBanner', async (req, res) => {
     req.body.SuperAdmin = true;
     BannerFunctions.Create(req, res)
@@ -32,3 +34,11 @@ app.post('/UpdateStoreAdmins', async (req, res) => StoreAdminsFunctions.Update(r
 app.post('/DeleteStoreAdmins', async (req, res) => StoreAdminsFunctions.Delete(req, res))
 
 exports.SuperAdmin = functions.region("asia-south1").https.onRequest(app)
+
+const app3 = express();
+app3.use(cors({ origin: true }));
+app3.use(common.decodeIDTokenForLogin)
+app3.post('/SignUp', async (req, res) => SuperAdminFunctions.Create(req, res))
+
+app3.post('/Login', async (req, res) => SuperAdminFunctions.Login(req, res))
+exports.LoginForStoreAdmin = functions.region("asia-south1").https.onRequest(app3);
