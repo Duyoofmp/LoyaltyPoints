@@ -55,12 +55,12 @@ async function Create(req, res) {
             if (check) {
                 if (req.body.StaffId !== undefined) {
                     promise.push(admin.firestore().collection("Users").doc(DocId).update({
-                        StaffIds: arrayUnion(req.body.StaffId)
+                        StaffIds: admin.firestore.FieldValue.arrayUnion(req.body.StaffId)
                     }))
                     StoreData.StaffId = req.body.StaffId
                 }
                 promise.push(admin.firestore().collection("Users").doc(DocId).update({
-                    StoreAdminIds: arrayUnion(req.body.StoreAdminId)
+                    StoreAdminIds: admin.firestore.FieldValue.arrayUnion(req.body.StoreAdminId)
                 }))
                 promise.push(dataHandling.Create(`Users/${DocId}/StoreAdmins`, StoreData, req.body.StoreAdminId))
                 await Promise.all(promise)
@@ -87,9 +87,10 @@ async function Update(req, res) {
 
 
 async function Delete(req, res) {
-    await admin.firestore.collection("Users").doc(req.body.DocId).update({
-        StoreAdminIds: arrayRemove(req.body.StoreAdminId)
+    await admin.firestore().collection("Users").doc(req.body.DocId).update({
+        StoreAdminIds: admin.firestore.FieldValue.arrayRemove(req.body.StoreAdminId)
     })
+    await dataHandling.Delete(`Users/${req.body.DocId}/StoreAdmins`, req.body.StoreAdminId)
     return res.json(true)
 }
 

@@ -4,6 +4,7 @@ const dataHandling = require("../functions");
 
 async function Create(req, res) {
   req.body.index = Date.now()
+  req.body.Percentage = parseInt(req.body.Percentage)
   await dataHandling.Create(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body)
   return res.json(true)
 }
@@ -19,7 +20,7 @@ async function Delete(req, res) {
 
 async function Read(req, res) {
   const data = await dataHandling.Read(`StoreAdmins/${req.body.StoreAdminId}/Category`, req.body.DocId, req.body.index, req.body.Keyword);
- return res.json(data)
+  return res.json(data)
 }
 
 
